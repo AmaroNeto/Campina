@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Campina</string>
+    <string name="start">Start</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="welcome">Welcome</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec iaculis sodales ultricies. Nulla congue, ante nec pharetra congue, dolor mi bibendum ligula, vitae pulvinar sem nisl non sapien. Donec porta et nibh id egestas. Nam ornare ultrices metus, vitae sodales eros faucibus eget. Suspendisse neque eros, gravida a ex id, pretium condimentum nisi. Suspendisse a dapibus sapien. Phasellus scelerisque posuere dignissim.</string>
+</resources>
