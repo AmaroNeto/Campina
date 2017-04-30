@@ -49,6 +49,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
         holder.data = obj;
 
+        holder.position = position;
+
         Picasso
                 .with(context)
                 .load(obj.getUrl())
@@ -95,6 +97,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         TextView title;
         TextView count;
         ImageView thumbnail;
+        int position;
         Image data;
 
         public ViewHolder(View parent){
@@ -111,6 +114,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         public void onClick(View view) {
 
             Intent it = new Intent(context, TimeMachineActivity.class);
+            it.putExtra("POSITION",position);
             context.startActivity(it);
 
         }

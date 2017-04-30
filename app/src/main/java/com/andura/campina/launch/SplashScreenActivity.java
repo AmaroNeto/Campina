@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andura.campina.R;
@@ -32,6 +34,7 @@ import com.google.android.gms.location.LocationServices;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,24 +97,39 @@ public class SplashScreenActivity extends AppCompatActivity implements
             ActivityCompat.requestPermissions(this, PERMISSIONS_GPS,
                     REQUEST_ID_MULTIPLE_PERMISSIONS);
         }else{
-            downloadData();
+
+            if(mGoogleApiClient.isConnected()){
+                //downloadData();
+            }
+
         }
+
+        TextView title =(TextView) findViewById(R.id.title);
+        Typeface typeFace= Typeface.createFromAsset(getAssets(),"fonts/Sho-CardCapsNF.ttf");
+        title.setTypeface(typeFace);
 
 
     }
 
     private void downloadData(){
         if(Util.checkInternetConnection()) {
-            BackgroundLoginTask task = new BackgroundLoginTask("2017","https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2017-04-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+
+            ImagemRepository repository = ImagemRepository.getInstance();
+            repository.clean();
+
+            CityTask city = new CityTask("2017","http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lgn);
+            city.execute();
+
+            BackgroundLoginTask task = new BackgroundLoginTask("2017","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2017-04-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
             task.execute();
 
-            BackgroundLoginTask task2 = new BackgroundLoginTask("2016","https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2016-04-22&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+            BackgroundLoginTask task2 = new BackgroundLoginTask("2016","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2016-04-22&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
             task2.execute();
 
-            BackgroundLoginTask task4 = new BackgroundLoginTask("2015","https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2015-04-10&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+            BackgroundLoginTask task4 = new BackgroundLoginTask("2015","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2015-04-10&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
             task4.execute();
 
-            BackgroundLoginTask task3 = new BackgroundLoginTask("2014","https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2014-04-05&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+            BackgroundLoginTask task3 = new BackgroundLoginTask("2014","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2014-04-05&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
             task3.execute();
         }
     }
@@ -144,6 +162,10 @@ public class SplashScreenActivity extends AppCompatActivity implements
 
             lat = mLastLocation.getLatitude();
             lgn = mLastLocation.getLongitude();
+
+            Log.d(AppVar.DEBUG,"lat "+lat+" / lng "+lgn);
+
+            downloadData();
         }
     }
 
@@ -182,7 +204,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
             //dialog.show();
 
             repository = ImagemRepository.getInstance();
-            repository.clean();
+
 
         }
 
@@ -232,6 +254,8 @@ public class SplashScreenActivity extends AppCompatActivity implements
 
                 }
 
+                return false;
+
 
             }catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -256,13 +280,135 @@ public class SplashScreenActivity extends AppCompatActivity implements
             increment = increment + 10;
             progressBar.setProgress(increment);
 
-            if(increment == 30){
+            if(increment == 40 && parsingError == true){
+
+                if(parsingError){
                 Intent it = new Intent();
                 it.setClass(SplashScreenActivity.this, MainActivity.class);
                 startActivity(it);
 
-                SplashScreenActivity.this.finish();
+                SplashScreenActivity.this.finish();}else{
+                    Toast.makeText(SplashScreenActivity.this,"Error to Download Images from Nasa.",Toast.LENGTH_LONG).show();
+                }
             }
+
+        }
+
+        @Override
+        protected void onCancelled() {
+
+            if(dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+        }
+    }
+
+    private class CityTask extends AsyncTask<Void, Void, Boolean> {
+
+        private ProgressDialog dialog;
+        private String url;
+        private String year;
+        private ImagemRepository repository;
+
+
+
+        public CityTask(String year, String url){
+            this.url = url;
+            this.year = year;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+            dialog = new ProgressDialog(SplashScreenActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setTitle("Acessando...");
+            dialog.setMessage("Espere um pouco...");
+            dialog.setIndeterminate(true);
+            //dialog.show();
+
+            repository = ImagemRepository.getInstance();
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            Util.trustEveryone();
+            final String USER_AGENT = "Mozilla/5.0";
+
+            try {
+                //String url = "https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2014-08-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO";
+
+                URL obj = new URL(url);
+
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                //add reuqest header
+                con.setRequestMethod("GET");
+                con.setRequestProperty("User-Agent", USER_AGENT);
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                con.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+
+                int responseCode = con.getResponseCode();
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                Log.d(AppVar.DEBUG,"RESULT : "+response.toString());
+
+                if (responseCode == 200) {
+
+                    JSONObject x = new JSONObject(response.toString());
+
+                    JSONArray result = x.getJSONArray("results");
+
+                    JSONObject adress = result.getJSONObject(0);
+
+                    JSONArray adress2 = adress.getJSONArray("address_components");
+
+                    JSONObject data = adress2.getJSONObject(3);
+
+                    repository.setCity(data.getString("long_name"));
+
+
+                    return true;
+
+                }
+
+                return false;
+
+
+            }catch (MalformedURLException e) {
+                e.printStackTrace();
+                return false;
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                return false;
+            }  catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean parsingError) {
+
+            increment = increment + 10;
+            progressBar.setProgress(increment);
 
         }
 

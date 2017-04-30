@@ -56,21 +56,59 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:textSize="10sp"
-                android:text="year"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:id="@+id/city"
+                android:textSize="30sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                android:textSize="14sp"
-                android:text="2010"
+            <!--<View
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="1dp"
+                android:background="@android:color/background_dark"
+                />-->
 
             <TextView
+                android:id="@+id/pib_tag"
+                android:textSize="20sp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lorem_ipsum"/>
+                android:text="PIB"
+                />
+            <TextView
+                android:textSize="15sp"
+                android:id="@+id/pib"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="PIB"
+                />
+
+            <TextView
+                android:id="@+id/vegetation_tag"
+                android:layout_marginTop="10dp"
+                android:textSize="20sp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Vegetation"
+                />
+            <TextView
+                android:textSize="15sp"
+                android:id="@+id/vegetation"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="40%"
+                />
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_marginTop="10dp"
+                android:text="@string/lorem_ipsum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
 
         </LinearLayout>

@@ -41,20 +41,24 @@ public class MainActivity extends AppCompatActivity {
 
         repository = ImagemRepository.getInstance();
 
-        adapter = new ImageAdapter(this,repository.getImages());
+        //adapter = new ImageAdapter(this,repository.getImages());
+        adapter = new ImageAdapter(this,getImages());
+
 
         mainImage = (ImageView) findViewById(R.id.expandedImage);
         arc = (ArcProgress) findViewById(R.id.arc_progress);
 
         Picasso
                 .with(this)
-                .load(repository.getImages().get(0).getUrl())
+                //.load(repository.getImages().get(0).getUrl())
+                .load(getImages().get(0).getUrl())
                 .placeholder(R.drawable.progress_animation)
                 .error(android.R.drawable.stat_notify_error)
                 .fit() // will explain later
                 .into(mainImage);
 
         TextView myTextView=(TextView)findViewById(R.id.city);
+        myTextView.setText(repository.getCity()+", "+getImages().get(0).getTitle());
         Typeface typeFace= Typeface.createFromAsset(getAssets(),"fonts/Queen of Camelot.otf");
         myTextView.setTypeface(typeFace);
 
@@ -76,13 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
         List<Image> result = new ArrayList<Image>();
 
-        Image im1 = new Image("2010","https://earthengine.googleapis.com/api/thumb?thumbid=3acd8ae148de56d514440b39aae734db&token=4a12f712ce8182c0a457611a23d54a51");
-        Image im2 = new Image("2011","https://earthengine.googleapis.com/api/thumb?thumbid=3acd8ae148de56d514440b39aae734db&token=4a12f712ce8182c0a457611a23d54a51");
-        Image im3 = new Image("2014","https://earthengine.googleapis.com/api/thumb?thumbid=3acd8ae148de56d514440b39aae734db&token=4a12f712ce8182c0a457611a23d54a51");
+        //Image im1 = new Image("2017","https://static.pexels.com/photos/2422/sky-earth-galaxy-universe.jpg");
+        Image im2 = new Image("2016","https://static.pexels.com/photos/2422/sky-earth-galaxy-universe.jpg");
+        Image im3 = new Image("2015","https://static.pexels.com/photos/2422/sky-earth-galaxy-universe.jpg");
+        Image im4 = new Image("2014","https://static.pexels.com/photos/2422/sky-earth-galaxy-universe.jpg");
 
-        result.add(im1);
+
+        //result.add(im1);
         result.add(im2);
         result.add(im3);
+        result.add(im4);
 
         return result;
     }

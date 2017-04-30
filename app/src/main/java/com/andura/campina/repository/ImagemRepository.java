@@ -14,6 +14,7 @@ import java.util.List;
 public class ImagemRepository {
 
     List<Image> list;
+    String city;
     private static ImagemRepository instance;
 
     private ImagemRepository(){
@@ -47,6 +48,14 @@ public class ImagemRepository {
     public Image getImage(int position){
 
         return list.get(position);
+    }
+
+    public void setCity(String city){
+        this.city = city;
+    }
+
+    public String getCity(){
+        return this.city;
     }
 
 }
