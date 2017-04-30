@@ -22,6 +22,8 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +101,7 @@ public class TimeMachineFragment extends Fragment {
         TextView pib =(TextView) layout.findViewById(R.id.pib);
 
         GDP gdp = repository.findGDPByYear(image.getTitle());
-        pib.setText(gdp.getGdp()+"");
+        pib.setText("R$"+String.format("%.2f", gdp.getGdp())+"");
 
 
         TextView veg =(TextView) layout.findViewById(R.id.vegetation);
@@ -146,6 +148,16 @@ public class TimeMachineFragment extends Fragment {
         result.add(im4);
 
         return result;
+    }
+
+    public static double round(double value, int places) {
+
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+
+        return bd.doubleValue();
     }
 
 }

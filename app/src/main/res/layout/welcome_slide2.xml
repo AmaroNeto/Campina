@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:background="@android:color/holo_green_dark">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -14,19 +14,19 @@
         <ImageView
             android:layout_width="@dimen/img_width_height"
             android:layout_height="@dimen/img_width_height"
-            android:background="@mipmap/ic_launcher"
+            android:background="@drawable/connection"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/welcome"
+            android:text="Watching the point."
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
             android:textStyle="bold" />
 
         <TextView
-            android:text="@string/lorem_ipsum"
+            android:text="NatMachine is a time machine for your place. Discover how the economic development can impact the environment."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

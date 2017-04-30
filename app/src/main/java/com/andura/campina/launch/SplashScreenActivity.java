@@ -291,7 +291,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
             increment = increment + 10;
             progressBar.setProgress(increment);
 
-            if(increment == 60 && parsingError == true){
+            if(increment >= 60 && parsingError == true){
 
                 if(parsingError){
                 Intent it = new Intent();
@@ -803,6 +803,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
 
                         Log.d(AppVar.DEBUG, "DENIED");
 
+
                    /* Snackbar.make(getCurrentFocus(), R.string.permission_fine_location_rationale,
                             Snackbar.LENGTH_INDEFINITE)
                             .setAction(R.string.ok, new View.OnClickListener() {
@@ -824,6 +825,9 @@ public class SplashScreenActivity extends AppCompatActivity implements
                             .show();*/
 
                     } else {
+
+                        lat = -8.062999;
+                        lgn = -34.871000;
 
                         downloadData();
 
