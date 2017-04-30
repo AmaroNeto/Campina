@@ -84,8 +84,8 @@
                     <com.github.lzyzsd.circleprogress.ArcProgress
 
                         android:id="@+id/arc_progress"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_alignParentBottom="true"
                         android:layout_margin="10dp"
                         app:arc_finished_color="@color/colorPrimary"

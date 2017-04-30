@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andura.campina.R;
+import com.andura.campina.model.Vegetation;
+import com.andura.campina.repository.ImagemRepository;
 import com.andura.campina.timemachine.TimeMachineActivity;
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +26,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     private Context context;
     private List<Image> mImage;
+    private ImagemRepository repository;
 
     public ImageAdapter(Context ctx){
         context = ctx;
@@ -32,6 +35,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public ImageAdapter(Context ctx, List<Image> itens){
         context = ctx;
         mImage = itens;
+        repository = ImagemRepository.getInstance();
     }
 
     @Override
@@ -42,7 +46,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         Typeface typeFace= Typeface.createFromAsset(context.getAssets(),"fonts/Queen of Camelot.otf");
 
         holder.title.setText( obj.getTitle() );
-        holder.count.setText( "45%" );
+
+        Vegetation v = repository.findVegetationByYear(obj.getTitle());
+
+        int value = (int) (((v.getVegetation()+2)/12) * 100);
+
+        holder.count.setText( value+"%" );
 
         holder.title.setTypeface(typeFace);
         holder.count.setTypeface(typeFace);

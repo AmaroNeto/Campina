@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andura.campina.R;
 import com.andura.campina.image.Image;
 import com.andura.campina.image.ImageAdapter;
+import com.andura.campina.model.Vegetation;
 import com.andura.campina.repository.ImagemRepository;
+import com.andura.campina.util.AppVar;
 import com.github.lzyzsd.circleprogress.ArcProgress;
 import com.squareup.picasso.Picasso;
 
@@ -41,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         repository = ImagemRepository.getInstance();
 
-        //adapter = new ImageAdapter(this,repository.getImages());
-        adapter = new ImageAdapter(this,getImages());
+        adapter = new ImageAdapter(this,repository.getImages());
+        //adapter = new ImageAdapter(this,getImages());
 
 
         mainImage = (ImageView) findViewById(R.id.expandedImage);
@@ -50,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         Picasso
                 .with(this)
-                //.load(repository.getImages().get(0).getUrl())
-                .load(getImages().get(0).getUrl())
+                .load(repository.getImages().get(0).getUrl())
+                //.load(getImages().get(0).getUrl())
                 .placeholder(R.drawable.progress_animation)
                 .error(android.R.drawable.stat_notify_error)
                 .fit() // will explain later
@@ -62,13 +65,19 @@ public class MainActivity extends AppCompatActivity {
         Typeface typeFace= Typeface.createFromAsset(getAssets(),"fonts/Queen of Camelot.otf");
         myTextView.setTypeface(typeFace);
 
+        Vegetation veg = repository.findVegetationByYear("2016");
+
+        int value = (int) (((veg.getVegetation()+2)/12) * 100);
+
+        Log.d(AppVar.DEBUG,"VALUE "+veg.getVegetation());
+
         arc.setBottomText("Vegetation");
-        arc.setProgress(76);
+        arc.setProgress(value);
         //arc.setUnfinishedStrokeColor(android.R.color.background_light);
         //arc.setTextColor(android.R.color.white);
 
        mRecyclerView = (RecyclerView) findViewById(R.id.images);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+       RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
        mRecyclerView.setLayoutManager(mLayoutManager);
         //mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
 

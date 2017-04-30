@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.andura.campina.R;
 import com.andura.campina.image.Image;
 import com.andura.campina.main.MainActivity;
+import com.andura.campina.model.GDP;
+import com.andura.campina.model.Vegetation;
 import com.andura.campina.repository.ImagemRepository;
 import com.andura.campina.util.AppVar;
 import com.andura.campina.util.Util;
@@ -46,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -120,10 +123,18 @@ public class SplashScreenActivity extends AppCompatActivity implements
             CityTask city = new CityTask("2017","http://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lgn);
             city.execute();
 
-            BackgroundLoginTask task = new BackgroundLoginTask("2017","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2017-04-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
-            task.execute();
+            VegetationTask veg = new VegetationTask("2016","https://stormy-springs-29754.herokuapp.com/cities/261160/vegetation-index?format=json");
+            veg.execute();
 
-            BackgroundLoginTask task2 = new BackgroundLoginTask("2016","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2016-04-22&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+            GDPTask gdp = new GDPTask("2016","https://stormy-springs-29754.herokuapp.com/cities/261160/gdp?format=json");
+            gdp.execute();
+
+
+
+            BackgroundLoginTask task = new BackgroundLoginTask("2017","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2017-04-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
+            //task.execute();
+
+            BackgroundLoginTask task2 = new BackgroundLoginTask("2016","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2016-11-20&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
             task2.execute();
 
             BackgroundLoginTask task4 = new BackgroundLoginTask("2015","https://api.nasa.gov/planetary/earth/imagery?lon="+lgn+"&lat="+lat+"&date=2015-04-10&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO");
@@ -280,7 +291,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
             increment = increment + 10;
             progressBar.setProgress(increment);
 
-            if(increment == 40 && parsingError == true){
+            if(increment == 60 && parsingError == true){
 
                 if(parsingError){
                 Intent it = new Intent();
@@ -312,8 +323,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
         private ImagemRepository repository;
 
 
-
-        public CityTask(String year, String url){
+        public CityTask(String year, String url) {
             this.url = url;
             this.year = year;
         }
@@ -363,7 +373,7 @@ public class SplashScreenActivity extends AppCompatActivity implements
                 }
                 in.close();
 
-                Log.d(AppVar.DEBUG,"RESULT : "+response.toString());
+                Log.d(AppVar.DEBUG, "RESULT : " + response.toString());
 
                 if (responseCode == 200) {
 
@@ -387,13 +397,13 @@ public class SplashScreenActivity extends AppCompatActivity implements
                 return false;
 
 
-            }catch (MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return false;
             } catch (ProtocolException e) {
                 e.printStackTrace();
                 return false;
-            }  catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             } catch (JSONException e) {
@@ -410,28 +420,388 @@ public class SplashScreenActivity extends AppCompatActivity implements
             increment = increment + 10;
             progressBar.setProgress(increment);
 
+            WikiTask wiki = new WikiTask(repository.getCity());
+            wiki.execute();
+
+        }
+
+    }
+
+    private class VegetationTask extends AsyncTask<Void, Void, Boolean> {
+
+            private ProgressDialog dialog;
+            private String url;
+            private String year;
+            private ImagemRepository repository;
+
+
+            public VegetationTask(String year, String url) {
+                this.url = url;
+                this.year = year;
+            }
+
+            @Override
+            protected void onPreExecute() {
+
+                dialog = new ProgressDialog(SplashScreenActivity.this);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setTitle("Acessando...");
+                dialog.setMessage("Espere um pouco...");
+                dialog.setIndeterminate(true);
+                //dialog.show();
+
+                repository = ImagemRepository.getInstance();
+
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+
+                Util.trustEveryone();
+                final String USER_AGENT = "Mozilla/5.0";
+
+                try {
+                    //String url = "https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2014-08-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO";
+
+                    URL obj = new URL(url);
+
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                    //add reuqest header
+                    con.setRequestMethod("GET");
+                    con.setRequestProperty("User-Agent", USER_AGENT);
+                    con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                    con.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+
+                    int responseCode = con.getResponseCode();
+
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    Log.d(AppVar.DEBUG, "RESULT : " + response.toString());
+
+                    if (responseCode == 200) {
+
+                        JSONArray result = new JSONArray(response.toString());
+
+                        for (int i = 0; i < result.length(); i++) {
+
+                            JSONObject object = result.getJSONObject(i);
+
+                            Vegetation veg = new Vegetation();
+                            veg.setYear(object.getString("year"));
+                            veg.setVegetation(object.getDouble("value"));
+
+                            repository.save(veg);
+
+                        }
+
+
+                        return true;
+
+                    }
+
+                    return false;
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean parsingError) {
+
+                increment = increment + 10;
+                progressBar.setProgress(increment);
+
+                WikiTask wiki = new WikiTask(repository.getCity());
+                //wiki.execute();
+
+            }
+
+            @Override
+            protected void onCancelled() {
+
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+
+            }
+        }
+
+    private class GDPTask extends AsyncTask<Void, Void, Boolean> {
+
+        private ProgressDialog dialog;
+        private String url;
+        private String year;
+        private ImagemRepository repository;
+
+
+        public GDPTask(String year, String url) {
+            this.url = url;
+            this.year = year;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+            dialog = new ProgressDialog(SplashScreenActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setTitle("Acessando...");
+            dialog.setMessage("Espere um pouco...");
+            dialog.setIndeterminate(true);
+            //dialog.show();
+
+            repository = ImagemRepository.getInstance();
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            Util.trustEveryone();
+            final String USER_AGENT = "Mozilla/5.0";
+
+            try {
+                //String url = "https://api.nasa.gov/planetary/earth/imagery?lon=-40.501841&lat=-7.584989&date=2014-08-01&cloud_score=True&api_key=xK1JkszDw0Y5kuwOn0BABXGxamiJFhLlNPv6uIbO";
+
+                URL obj = new URL(url);
+
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                //add reuqest header
+                con.setRequestMethod("GET");
+                con.setRequestProperty("User-Agent", USER_AGENT);
+                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                con.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+
+                int responseCode = con.getResponseCode();
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                Log.d(AppVar.DEBUG, "RESULT : " + response.toString());
+
+                if (responseCode == 200) {
+
+                    JSONArray result = new JSONArray(response.toString());
+
+                    for (int i = 0; i < result.length(); i++) {
+
+                        JSONObject object = result.getJSONObject(i);
+
+                        GDP veg = new GDP();
+                        veg.setYear(object.getString("year"));
+                        veg.setGdp(object.getDouble("value"));
+
+                        repository.save(veg);
+
+                    }
+
+
+                    return true;
+
+                }
+
+                return false;
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return false;
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean parsingError) {
+
+            increment = increment + 10;
+            progressBar.setProgress(increment);
+
+            WikiTask wiki = new WikiTask(repository.getCity());
+            //wiki.execute();
+
         }
 
         @Override
         protected void onCancelled() {
 
-            if(dialog.isShowing()) {
+            if (dialog.isShowing()) {
                 dialog.dismiss();
             }
 
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    private class WikiTask extends AsyncTask<Void, Void, Boolean> {
 
-        switch (requestCode) {
-            case REQUEST_ID_MULTIPLE_PERMISSIONS: {
+            private ProgressDialog dialog;
+            //private String url;
+            private String year;
+            private ImagemRepository repository;
 
-                if(grantResults[0] == PackageManager.PERMISSION_DENIED){
 
-                    Log.d(AppVar.DEBUG,"DENIED");
+            public WikiTask(String year) {
+                //this.url = url;
+                this.year = year;
+            }
+
+            @Override
+            protected void onPreExecute() {
+
+                dialog = new ProgressDialog(SplashScreenActivity.this);
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setTitle("Acessando...");
+                dialog.setMessage("Espere um pouco...");
+                dialog.setIndeterminate(true);
+                //dialog.show();
+
+                repository = ImagemRepository.getInstance();
+
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+
+                Util.trustEveryone();
+                final String USER_AGENT = "Mozilla/5.0";
+
+                try {
+                    String url = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + year + "&formatversion=2";
+
+                    Log.d(AppVar.DEBUG, "URL : " + url);
+
+                    URL obj = new URL(url);
+
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                    //add reuqest header
+                    con.setRequestMethod("GET");
+                    con.setRequestProperty("User-Agent", USER_AGENT);
+                    con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+                    con.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+
+                    int responseCode = con.getResponseCode();
+
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    Log.d(AppVar.DEBUG, "RESULT : " + response.toString());
+
+                    if (responseCode == 200) {
+
+                        JSONObject x = new JSONObject(response.toString());
+
+                        JSONObject x2 = x.getJSONObject("query");
+
+                        JSONArray x3 = x2.getJSONArray("pages");
+
+
+                        JSONObject x4 = x3.getJSONObject(0);
+
+                        String text = x4.getString("extract");
+
+
+                        repository.setWikipedia(text);
+
+
+                        return true;
+
+                    }
+
+                    return false;
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                return false;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean parsingError) {
+
+                increment = increment + 10;
+                progressBar.setProgress(increment);
+
+            }
+
+            @Override
+            protected void onCancelled() {
+
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+
+            }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                               @NonNull int[] grantResults) {
+
+            switch (requestCode) {
+                case REQUEST_ID_MULTIPLE_PERMISSIONS: {
+
+                    if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+
+                        Log.d(AppVar.DEBUG, "DENIED");
 
                    /* Snackbar.make(getCurrentFocus(), R.string.permission_fine_location_rationale,
                             Snackbar.LENGTH_INDEFINITE)
@@ -453,13 +823,14 @@ public class SplashScreenActivity extends AppCompatActivity implements
                             })
                             .show();*/
 
-                }else{
+                    } else {
 
-                    downloadData();
+                        downloadData();
 
+                    }
                 }
-            }
 
             }
         }
+
 }

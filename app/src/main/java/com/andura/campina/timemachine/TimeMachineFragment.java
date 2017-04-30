@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.andura.campina.R;
 import com.andura.campina.image.Image;
+import com.andura.campina.model.GDP;
+import com.andura.campina.model.Vegetation;
 import com.andura.campina.repository.ImagemRepository;
 import com.andura.campina.util.AppVar;
 import com.squareup.picasso.MemoryPolicy;
@@ -35,6 +37,8 @@ public class TimeMachineFragment extends Fragment {
     ImagemRepository repository;
     ImageView mainImage;
 
+
+
     public static TimeMachineFragment newInstance(int position) {
         TimeMachineFragment fragmentFirst = new TimeMachineFragment();
         Bundle args = new Bundle();
@@ -52,8 +56,8 @@ public class TimeMachineFragment extends Fragment {
         Log.d(AppVar.DEBUG,"POSITION "+position);
 
         repository = ImagemRepository.getInstance();
-        //image = repository.getImage(position);
-        image = getImages().get(position);
+        image = repository.getImage(position);
+        //image = getImages().get(position);
 
     }
 
@@ -94,8 +98,21 @@ public class TimeMachineFragment extends Fragment {
         TextView pib_tag =(TextView) layout.findViewById(R.id.pib_tag);
         TextView pib =(TextView) layout.findViewById(R.id.pib);
 
+        GDP gdp = repository.findGDPByYear(image.getTitle());
+        pib.setText(gdp.getGdp()+"");
+
+
         TextView veg =(TextView) layout.findViewById(R.id.vegetation);
         TextView veg_tag =(TextView) layout.findViewById(R.id.vegetation_tag);
+
+        Vegetation v = repository.findVegetationByYear(image.getTitle());
+
+        int value = (int) (((v.getVegetation()+2)/12) * 100);
+
+        veg.setText(value+"%");
+
+        TextView info =(TextView) layout.findViewById(R.id.info);
+        info.setText(repository.getWikipedia());
 
 
         Typeface typeFace= Typeface.createFromAsset(getActivity().getAssets(),"fonts/Queen of Camelot.otf");
@@ -105,6 +122,7 @@ public class TimeMachineFragment extends Fragment {
 
         veg.setTypeface(typeFace);
         veg_tag.setTypeface(typeFace);
+        //info.setTypeface(typeFace);
 
 
 
