@@ -23,7 +23,7 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             custom:arc_progress="55"
-            custom:arc_bottom_text="Desforestation"/>
+            custom:arc_bottom_text="Vegetation"/>
 
         <LinearLayout
             android:layout_marginBottom="20dp"
@@ -74,8 +74,6 @@
             android:layout_height="1dp"
             android:background="@android:color/white"
             />
-
-
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginTop="15dp"

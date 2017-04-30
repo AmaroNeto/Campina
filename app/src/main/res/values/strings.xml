@@ -5,4 +5,6 @@
     <string name="skip">Skip</string>
     <string name="welcome">Welcome</string>
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec iaculis sodales ultricies. Nulla congue, ante nec pharetra congue, dolor mi bibendum ligula, vitae pulvinar sem nisl non sapien. Donec porta et nibh id egestas. Nam ornare ultrices metus, vitae sodales eros faucibus eget. Suspendisse neque eros, gravida a ex id, pretium condimentum nisi. Suspendisse a dapibus sapien. Phasellus scelerisque posuere dignissim.</string>
+    <string name="permission_fine_location_rationale">Need to connect to an internet</string>
+    <string name="ok">OK</string>
 </resources>

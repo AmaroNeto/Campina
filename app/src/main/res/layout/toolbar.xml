@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:elevation="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:layout_scrollFlags="scroll|enterAlways"
+    app:layout_collapseMode="pin">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/chat_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="start|center_vertical"
+            android:clickable="false">
+
+            <!-- This is a centered logo -->
+            <ImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@mipmap/ic_launcher"
+                android:id="@+id/image_icon"
+                android:layout_gravity="start|center_vertical"
+                />
+
+            <!-- This is a centered title -->
+
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="?attr/actionBarSize"
+                android:gravity="center_vertical"
+                android:text="@null"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+                />
+
+
+
+
+        </LinearLayout>
+
+
+
+
+    </FrameLayout>
+
+
+
+</android.support.v7.widget.Toolbar>
